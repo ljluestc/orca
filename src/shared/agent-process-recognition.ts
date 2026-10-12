@@ -8,9 +8,11 @@ import { getFirstCommandToken } from './command-token-scanner'
 import {
   comparablePath,
   findInterpreterEntrypointToken,
+  findPythonInlineSource,
   PYTHON_PROCESS_RE,
   tokenizeCommandLine
 } from './agent-command-line-entrypoint'
+import { isHermesPythonInlineSource, isHermesPythonModule } from './hermes-launcher-identity'
 import { isFreshOmpLaunchCommand } from './omp-fresh-launch'
 
 export type RecognizedAgentProcess = { agent: TerminalAgent; processName: string }
@@ -125,6 +127,9 @@ function recognizePythonModule(
   if (!moduleName || moduleName.startsWith('-')) {
     return null
   }
+  if (isHermesPythonModule(moduleName)) {
+    return recognizedAgentForProcess('hermes')
+  }
   const normalized = moduleName.split('.', 1)[0]?.toLowerCase() ?? ''
   return recognizedAgentForProcess(normalized)
 }
@@ -212,6 +217,13 @@ export function recognizeAgentProcessFromCommandLine(
   const directRecognition = keep ? direct : filterHeadlessOneShotAgentCommand(direct, tokens)
   if (directRecognition) {
     return directRecognition
+  }
+  if (PYTHON_PROCESS_RE.test(firstNormalized)) {
+    const inlineSource = findPythonInlineSource(tokens)
+    if (inlineSource !== null) {
+      // Why: argv after `-c <source>` is the program's own arguments, never an entrypoint.
+      return isHermesPythonInlineSource(inlineSource) ? recognizedAgentForProcess('hermes') : null
+    }
   }
   const entrypoint = findInterpreterEntrypointToken(tokens, firstNormalized)
   if (!entrypoint) {

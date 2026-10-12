@@ -1,4 +1,5 @@
 import type { TuiAgent } from './tui-agent'
+import { HERMES_TUI_NODE_ENTRYPOINT_RE } from './hermes-launcher-identity'
 
 // Node CLIs whose shims launch a generic script (cli.js, versioned index.js), so
 // only the exact install path is an authoritative identity signal.
@@ -34,5 +35,7 @@ export const EXACT_NODE_ENTRYPOINT_IDENTITIES: readonly {
     pattern: /(?:^|\/)node_modules\/@deepseek-ai\/dsh\/lib\/bin\.js$/,
     agent: 'dsh',
     processName: 'dsh'
-  }
+  },
+  // Why: Hermes' Python launcher spawns its TUI as `node --expose-gc <dir>/entry.js`.
+  { pattern: HERMES_TUI_NODE_ENTRYPOINT_RE, agent: 'hermes', processName: 'hermes' }
 ]

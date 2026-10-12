@@ -123,6 +123,39 @@ export function findInterpreterEntrypointToken(
   return null
 }
 
+const PYTHON_SHORT_OPTIONS_WITH_VALUE = new Set(['W', 'X'])
+
+/**
+ * Everything after Python's `-c`, or null when the interpreter runs a script or module.
+ * Why the whole tail: `ps -o command=` joins argv unquoted, so the program spans tokens.
+ */
+export function findPythonInlineSource(tokens: string[]): string | null {
+  for (let index = 1; index < tokens.length; index += 1) {
+    const token = tokens[index]
+    if (!token.startsWith('-') || token === '-' || token === '--' || token.startsWith('--')) {
+      return null
+    }
+    // Why: CPython parses short flags as a cluster (`-Ic`), and `-c`/`-m` end option parsing.
+    for (let offset = 1; offset < token.length; offset += 1) {
+      const flag = token[offset]
+      if (flag === 'm') {
+        return null
+      }
+      if (flag === 'c') {
+        const tail = [token.slice(offset + 1), ...tokens.slice(index + 1)].filter(Boolean)
+        return tail.length > 0 ? tail.join(' ') : null
+      }
+      if (PYTHON_SHORT_OPTIONS_WITH_VALUE.has(flag)) {
+        if (offset === token.length - 1) {
+          index += 1
+        }
+        break
+      }
+    }
+  }
+  return null
+}
+
 export function comparablePath(token: string): string {
   return token
     .trim()
