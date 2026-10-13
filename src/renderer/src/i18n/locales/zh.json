@@ -17928,6 +17928,8 @@
         "loadingFiles": "正在加载文件...",
         "noFiles": "没有匹配的文件",
         "filesLoadFailed": "无法加载文件",
+        "contentMatches": "文件内容",
+        "searchingFileContents": "正在搜索文件内容...",
         "attach": "附加文件",
         "startDictation": "开始听写",
         "stopDictation": "停止听写",

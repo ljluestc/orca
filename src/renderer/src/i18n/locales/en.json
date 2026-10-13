@@ -18263,6 +18263,8 @@
         "loadingFiles": "Loading files...",
         "noFiles": "No matching files",
         "filesLoadFailed": "Couldn't load files",
+        "contentMatches": "File contents",
+        "searchingFileContents": "Searching file contents...",
         "attach": "Attach file",
         "startDictation": "Start dictation",
         "stopDictation": "Stop dictation",

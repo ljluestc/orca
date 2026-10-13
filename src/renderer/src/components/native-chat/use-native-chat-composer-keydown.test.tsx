@@ -61,7 +61,13 @@ function setup(
   const hook = renderHook(() =>
     useNativeChatComposerKeyDown({
       autocomplete,
-      mentionFiles: { files, loading, failed: false },
+      mentionFiles: {
+        files,
+        contentStart: files.length,
+        loading,
+        contentLoading: false,
+        failed: false
+      },
       activeSuggestion,
       draft,
       isComposing: () => composing,
@@ -227,7 +233,13 @@ describe('useNativeChatComposerKeyDown', () => {
         autocomplete: { mode: 'none' },
         activeSuggestion: 0,
         draft,
-        mentionFiles: { files: [], loading: false, failed: false },
+        mentionFiles: {
+          files: [],
+          contentStart: 0,
+          loading: false,
+          contentLoading: false,
+          failed: false
+        },
         completeMention: vi.fn(),
         recall: {
           source: { messages: prompts.map((text, index) => userMessage(String(index), text)) },

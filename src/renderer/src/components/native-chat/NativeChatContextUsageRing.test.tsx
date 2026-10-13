@@ -253,7 +253,13 @@ describe('NativeChatContextUsageRing', () => {
     function ComposerWithRing(): React.JSX.Element {
       const onKeyDown = useNativeChatComposerKeyDown({
         autocomplete: { mode: 'none' },
-        mentionFiles: { files: [], loading: false, failed: false },
+        mentionFiles: {
+          files: [],
+          contentStart: 0,
+          loading: false,
+          contentLoading: false,
+          failed: false
+        },
         completeMention: vi.fn(),
         activeSuggestion: 0,
         draft: '',

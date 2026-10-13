@@ -17949,6 +17949,8 @@
         "loadingFiles": "ファイルを読み込み中…",
         "noFiles": "一致するファイルがありません",
         "filesLoadFailed": "ファイルを読み込めませんでした",
+        "contentMatches": "ファイルの内容",
+        "searchingFileContents": "ファイルの内容を検索中…",
         "attach": "ファイルを添付する",
         "startDictation": "ディクテーションを開始する",
         "stopDictation": "ディクテーションを停止する",

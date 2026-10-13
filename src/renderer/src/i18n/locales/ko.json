@@ -17949,6 +17949,8 @@
         "loadingFiles": "파일 로드 중...",
         "noFiles": "일치하는 파일이 없습니다",
         "filesLoadFailed": "파일을 불러오지 못했습니다",
+        "contentMatches": "파일 내용",
+        "searchingFileContents": "파일 내용 검색 중...",
         "attach": "파일첨부",
         "startDictation": "받아쓰기 시작",
         "stopDictation": "받아쓰기 중지",

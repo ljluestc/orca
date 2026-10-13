@@ -18016,6 +18016,8 @@
         "loadingFiles": "Chargement des fichiers...",
         "noFiles": "Aucun fichier correspondant",
         "filesLoadFailed": "Impossible de charger les fichiers",
+        "contentMatches": "Contenu des fichiers",
+        "searchingFileContents": "Recherche dans le contenu des fichiers...",
         "attach": "Joindre un fichier",
         "startDictation": "Démarrer la dictée",
         "stopDictation": "Arrêter la dictée",

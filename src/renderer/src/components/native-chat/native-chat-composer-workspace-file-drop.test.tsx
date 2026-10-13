@@ -181,7 +181,13 @@ function ComposerProbe({
           onChoosePickerItem={() => {}}
           onRetrySkills={() => {}}
           onChooseMentionFile={() => {}}
-          mentionFiles={{ files: [], loading: false, failed: false }}
+          mentionFiles={{
+            files: [],
+            contentStart: 0,
+            loading: false,
+            contentLoading: false,
+            failed: false
+          }}
           onRemoveImageAttachment={attachments.removeImageAttachment}
           onAttach={() => {}}
           onDictationToggle={() => {}}

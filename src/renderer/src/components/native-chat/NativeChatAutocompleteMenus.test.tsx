@@ -210,13 +210,19 @@ describe('NativeChatPickerMenu', () => {
 describe('NativeChatMentionMenu', () => {
   afterEach(cleanup)
 
-  const NO_ROWS = { files: [], loading: false, failed: false }
+  const NO_ROWS = {
+    files: [],
+    contentStart: 0,
+    loading: false,
+    contentLoading: false,
+    failed: false
+  }
 
   it('lists files by name with their folder and inserts the one pressed', () => {
     const onChoose = vi.fn()
     render(
       <NativeChatMentionMenu
-        mention={{ ...NO_ROWS, files: ['src/app.ts', 'README.md'] }}
+        mention={{ ...NO_ROWS, files: ['src/app.ts', 'README.md'], contentStart: 2 }}
         activeIndex={1}
         listboxId="files"
         onChoose={onChoose}
@@ -229,12 +235,39 @@ describe('NativeChatMentionMenu', () => {
     expect(onChoose).not.toHaveBeenCalled()
     fireEvent.pointerDown(options[0])
     expect(onChoose).toHaveBeenCalledWith('src/app.ts')
+    expect(screen.queryByText('File contents')).toBeNull()
+  })
+
+  it('heads the content matches after the name matches and lets them be picked', () => {
+    const onChoose = vi.fn()
+    render(
+      <NativeChatMentionMenu
+        mention={{ ...NO_ROWS, files: ['src/db.ts', 'src/store/list.ts'], contentStart: 1 }}
+        activeIndex={1}
+        listboxId="files"
+        onChoose={onChoose}
+      />
+    )
+    const options = screen.getAllByRole('option')
+    expect(options).toHaveLength(2)
+    expect(options[1].getAttribute('aria-selected')).toBe('true')
+    const heading = screen.getByText('File contents')
+    // The heading sits between the name match and the content match.
+    expect(
+      options[0].compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      heading.compareDocumentPosition(options[1]) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    fireEvent.pointerDown(options[1])
+    expect(onChoose).toHaveBeenCalledWith('src/store/list.ts')
   })
 
   it.each([
     [NO_ROWS, 'No matching files'],
     [{ ...NO_ROWS, loading: true, failed: true }, 'Loading files...'],
-    [{ ...NO_ROWS, failed: true }, "Couldn't load files"]
+    [{ ...NO_ROWS, failed: true }, "Couldn't load files"],
+    [{ ...NO_ROWS, contentLoading: true }, 'Searching file contents...']
   ])('explains an empty list: %#', (mention, text) => {
     render(
       <NativeChatMentionMenu

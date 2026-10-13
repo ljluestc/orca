@@ -17914,6 +17914,8 @@
         "loadingFiles": "Cargando archivos...",
         "noFiles": "No hay archivos coincidentes",
         "filesLoadFailed": "No se pudieron cargar los archivos",
+        "contentMatches": "Contenido de archivos",
+        "searchingFileContents": "Buscando en el contenido de los archivos...",
         "attach": "Adjuntar archivo",
         "startDictation": "Iniciar dictado",
         "stopDictation": "Detener dictado",

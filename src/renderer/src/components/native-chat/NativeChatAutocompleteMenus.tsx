@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react'
+import { Fragment, memo, useEffect, useRef } from 'react'
 import { Package, RotateCcw } from 'lucide-react'
 import { translate } from '@/i18n/i18n'
 import { cn } from '@/lib/utils'
@@ -147,12 +147,20 @@ function getPickerEmptyText(
   return translate('components.native-chat.composer.noCommands', 'No matching commands')
 }
 
-function PickerGroupHeading({ kind }: { kind: 'commands' | 'skills' }): React.JSX.Element {
+const PICKER_GROUP_LABELS = {
+  commands: () => translate('components.native-chat.composer.commands', 'Commands'),
+  skills: () => translate('components.native-chat.composer.skills', 'Skills'),
+  contents: () => translate('components.native-chat.composer.contentMatches', 'File contents')
+} as const
+
+function PickerGroupHeading({
+  kind
+}: {
+  kind: keyof typeof PICKER_GROUP_LABELS
+}): React.JSX.Element {
   return (
     <div className="px-2 pb-1 pt-1.5 text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-      {kind === 'commands'
-        ? translate('components.native-chat.composer.commands', 'Commands')
-        : translate('components.native-chat.composer.skills', 'Skills')}
+      {PICKER_GROUP_LABELS[kind]()}
     </div>
   )
 }
@@ -319,7 +327,7 @@ export const NativeChatMentionMenu = memo(function NativeChatMentionMenu({
   onChoose: (path: string) => void
 }): React.JSX.Element {
   const activeItemRef = useRef<HTMLButtonElement | null>(null)
-  const { files } = mention
+  const { files, contentStart } = mention
   const selectedIndex = Math.min(activeIndex, files.length - 1)
 
   useEffect(() => {
@@ -331,30 +339,39 @@ export const NativeChatMentionMenu = memo(function NativeChatMentionMenu({
       ? null
       : mention.loading
         ? translate('components.native-chat.composer.loadingFiles', 'Loading files...')
-        : mention.failed
-          ? translate('components.native-chat.composer.filesLoadFailed', "Couldn't load files")
-          : translate('components.native-chat.composer.noFiles', 'No matching files')
+        : mention.contentLoading
+          ? translate(
+              'components.native-chat.composer.searchingFileContents',
+              'Searching file contents...'
+            )
+          : mention.failed
+            ? translate('components.native-chat.composer.filesLoadFailed', "Couldn't load files")
+            : translate('components.native-chat.composer.noFiles', 'No matching files')
 
   return (
     <PickerListbox id={listboxId}>
       {files.map((path, index) => {
         const FileIcon = getFileTypeIcon(path)
         return (
-          <PickerOptionButton
-            key={path}
-            id={`${listboxId}-option-${index}`}
-            selected={index === selectedIndex}
-            activeItemRef={activeItemRef}
-            onChoose={() => onChoose(path)}
-          >
-            <FileIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-            <FilenameFirstPath path={path} />
-          </PickerOptionButton>
+          <Fragment key={path}>
+            {index === contentStart ? <PickerGroupHeading kind="contents" /> : null}
+            <PickerOptionButton
+              id={`${listboxId}-option-${index}`}
+              selected={index === selectedIndex}
+              activeItemRef={activeItemRef}
+              onChoose={() => onChoose(path)}
+            >
+              <FileIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+              <FilenameFirstPath path={path} />
+            </PickerOptionButton>
+          </Fragment>
         )
       })}
       {statusText ? (
         <PickerStatus>
-          {mention.loading ? <LoadingSpinner className="size-3.5" /> : null}
+          {mention.loading || mention.contentLoading ? (
+            <LoadingSpinner className="size-3.5" />
+          ) : null}
           {statusText}
         </PickerStatus>
       ) : null}
